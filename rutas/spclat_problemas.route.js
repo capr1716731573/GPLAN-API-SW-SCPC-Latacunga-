@@ -9,40 +9,22 @@ const pool = require('../config/db');
 var crud = require('../funciones/crud_operaciones');
 //DATOS DE LA TABLA
 var datos_tabla = {
-    tabla_target: 'items_menu',
-    pk_tabla: 'pk_menu',
-    sp_crud_tabla: 'sp_salud_crud_menu_items'
+    tabla_target: 'problemas_spclat',
+    pk_tabla: 'pk_pro',
+    sp_crud_tabla: 'sp_spc_lat_crud_problemas_ciudadano'
 }
 
 //Rutas
 // ==========================================
 // Obtener todos los registros TODOS x PADRE
 // ========================================== 
-app.get('/', mdAuthenticationJWT.verificarToken, (req, res, next) => {
-    var padre = req.query.padre;
-    padre = Number(padre);
+app.get('/:pk_ciudadano', (req, res, next) => {
+    var pk_ciudadano = req.params.pk_ciudadano;
     var consulta;
-    //valido que exista el parametro "padre"
-    if (req.query.padre) {
-        consulta = `SELECT * FROM ${ datos_tabla.tabla_target } WHERE pk_padre=${padre} ORDER BY pk_menu ASC`;
-    } else {
-        consulta = `SELECT * FROM ${ datos_tabla.tabla_target }  WHERE pk_padre=0 ORDER BY pk_menu ASC`;
-    }
+    consulta = `SELECT * FROM sp_spc_lat_getproblemas(${pk_ciudadano});`;
+
     crud.getAll(datos_tabla.tabla_target, consulta, res);
 });
-
-// ==========================================
-// Obtener todos los registros busqueda avanzada por parametros
-// ========================================== 
-app.get('/busqueda', mdAuthenticationJWT.verificarToken, (req, res, next) => {
-    var busqueda = req.query.busqueda;
-    var consulta;
-    //valido que exista el parametro "desde"
-    consulta = `SELECT * FROM ${ datos_tabla.tabla_target } WHERE nombre_tipseg LIKE '%${busqueda}%'`;
-    //LLamo al archivo CRUD OPERACIONES
-    crud.getAll(datos_tabla.tabla_target, consulta, res);
-});
-
 
 
 // ==========================================
@@ -61,7 +43,7 @@ app.get('/:id', (req, res) => {
 // ==========================================
 // Ejecutar Crud acorde a parametro 
 // ========================================== 
-app.post('/', mdAuthenticationJWT.verificarToken, (req, res) => {
+app.post('/', (req, res) => {
 
     //Recibo los datos en el body y con el body parser me lo transforma a JSON
     var body = req.body;

@@ -9,49 +9,50 @@ const pool = require('../config/db');
 var crud = require('../funciones/crud_operaciones');
 //DATOS DE LA TABLA
 var datos_tabla = {
-    tabla_target: 'empresa_usuario',
-    pk_tabla: 'pk_user',
-    sp_crud_tabla: 'sp_salud_crud_empresa_usuario'
+    tabla_target: 'ciudad_spclat',
+    pk_tabla: 'pk_ciudad',
+    sp_crud_tabla: ''
 }
 
 //Rutas
 // ==========================================
 // Obtener todos los registros TODOS x PADRE
 // ========================================== 
-app.get('/:pk_user', mdAuthenticationJWT.verificarToken, (req, res, next) => {
-    var pk_user = req.params.pk_user;
+app.get('/', (req, res, next) => {
+
     var consulta;
-    consulta = "SELECT * from empresa_usuario INNER JOIN empresa e on empresa_usuario.pk_empre = e.pk_empre where pk_user=" + pk_user + "  ORDER BY e.nombre_empre";
+    consulta = `SELECT * FROM ${ datos_tabla.tabla_target }`;
+
     crud.getAll(datos_tabla.tabla_target, consulta, res);
 });
-
 
 
 // ==========================================
 // Obtener registro por ID
 // ========================================== 
-app.get('/:pk_user/:pk_empre', (req, res) => {
+app.get('/verificar_cedula/:cedula', (req, res) => {
     //con req.params.PARAMETRO .. recibe el parametro que envio en la peticion PUT con el campo id (/:id) que es igual al nombre del modelo
-    var pk_user = req.params.pk_user;
-    var pk_empre = req.params.pk_empre;
+    var cedula = req.params.cedula;
     //consulta si existen un registro del existente
-    consulta = "SELECT * from empresa_usuario INNER JOIN empresa e on empresa_usuario.pk_empre = e.pk_empre where pk_user=" + pk_user + " AND pk_empre=" + pk_empre + "  ORDER BY e.nombre_empre";
+    consulta = `SELECT * FROM sp_verificar_cedula(${cedula});`;
     //LLamo al archivo CRUD OPERACIONES
-    crud.getID(datos_tabla.tabla_target, id, consulta, res);
+    crud.getID(datos_tabla.tabla_target, cedula, consulta, res);
 
 });
 
 // ==========================================
 // Ejecutar Crud acorde a parametro 
 // ========================================== 
-app.post('/', mdAuthenticationJWT.verificarToken, (req, res) => {
-
-    //Recibo los datos en el body y con el body parser me lo transforma a JSON
-    var body = req.body;
-    consulta = `SELECT * FROM ${datos_tabla.sp_crud_tabla} ($1,$2)`;
-    crud.crudBasico(datos_tabla.tabla_target, consulta, body, res);
+app.get('/verificar_ciudadano/:cedula', (req, res) => {
+    //con req.params.PARAMETRO .. recibe el parametro que envio en la peticion PUT con el campo id (/:id) que es igual al nombre del modelo
+    var cedula = req.params.cedula;
+    //consulta si existen un registro del existente
+    consulta = `SELECT count(*) as numero_ciu FROM ciudadano_spclat WHERE cedula_ciu='${cedula}';`;
+    //LLamo al archivo CRUD OPERACIONES
+    crud.getID(datos_tabla.tabla_target, cedula, consulta, res);
 
 });
+
 
 
 module.exports = app;

@@ -9,42 +9,22 @@ const pool = require('../config/db');
 var crud = require('../funciones/crud_operaciones');
 //DATOS DE LA TABLA
 var datos_tabla = {
-    tabla_target: 'tipo_identificacion',
-    pk_tabla: 'pk_tipiden',
-    sp_crud_tabla: 'sp_salud_crud_tipo_identificacion'
+    tabla_target: 'etnia_spclat',
+    pk_tabla: 'pk_etnia',
+    sp_crud_tabla: ''
 }
 
 //Rutas
 // ==========================================
 // Obtener todos los registros TODOS x PADRE
 // ========================================== 
-app.get('/', mdAuthenticationJWT.verificarToken, (req, res, next) => {
-    var desde = req.query.desde;
-    desde = Number(desde);
-    var fk_padre = req.query.fk_padre || 0;
-    fk_padre = Number(fk_padre);
+app.get('/', (req, res, next) => {
+
     var consulta;
-    //valido que exista el parametro "desde"
-    if (req.query.desde) {
-        consulta = `SELECT * FROM ${ datos_tabla.tabla_target } LIMIT ${ rows } OFFSET ${ desde }`;
-    } else {
-        consulta = `SELECT * FROM ${ datos_tabla.tabla_target }`;
-    }
+    consulta = `SELECT * FROM ${ datos_tabla.tabla_target }`;
+
     crud.getAll(datos_tabla.tabla_target, consulta, res);
 });
-
-// ==========================================
-// Obtener todos los registros busqueda avanzada por parametros
-// ========================================== 
-app.get('/busqueda/:busqueda', mdAuthenticationJWT.verificarToken, (req, res, next) => {
-    var busqueda = req.params.busqueda;
-    var consulta;
-    //valido que exista el parametro "desde"
-    consulta = `SELECT * FROM ${ datos_tabla.tabla_target } WHERE nombre_tipiden LIKE '%${busqueda}%'`;
-    //LLamo al archivo CRUD OPERACIONES
-    crud.getAll(datos_tabla.tabla_target, consulta, res);
-});
-
 
 
 // ==========================================
@@ -63,7 +43,7 @@ app.get('/:id', (req, res) => {
 // ==========================================
 // Ejecutar Crud acorde a parametro 
 // ========================================== 
-app.post('/', mdAuthenticationJWT.verificarToken, (req, res) => {
+app.post('/', (req, res) => {
 
     //Recibo los datos en el body y con el body parser me lo transforma a JSON
     var body = req.body;
