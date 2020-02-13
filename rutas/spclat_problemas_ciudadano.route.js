@@ -26,6 +26,19 @@ app.get('/', (req, res, next) => {
     crud.getAll(datos_tabla.tabla_target, consulta, res);
 });
 
+//Rutas
+// ==========================================
+// Obtener todos los registros TODOS x PADRE
+// ========================================== 
+app.get('/resumen', (req, res, next) => {
+
+    var consulta;
+    consulta = `SELECT * FROM sp_spc_lat_getResumenProblemas()`;
+
+    crud.getAll(datos_tabla.tabla_target, consulta, res);
+});
+
+
 
 // ==========================================
 // Obtener registro por ID
